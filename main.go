@@ -26,10 +26,10 @@ var db *gorm.DB
 var err error
 
 func main() {
-	time.Sleep(10* time.Second)
+	time.Sleep(10 * time.Second)
 	// Connect to PostgreSQL Database
-	
-	db, err = gorm.Open(postgres.Open("postgresql://postgres:postgres@db:5432/progressdb?sslmode=disable"), &gorm.Config{})
+
+	db, err = gorm.Open(postgres.Open("postgresql://postgres:postgres@db-service:5432/progressdb?sslmode=disable"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database")
 	}
@@ -53,8 +53,16 @@ func main() {
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Implement logic to create user using HTTP
 	// Example:
-	user := User{Name: "John Doe", Age: 30, Birthday: time.Now()}
-	result := db.Create(&user)
+	
+	decoder := json.NewDecoder(r.Body)
+    var u User
+    err := decoder.Decode(&u)
+	if err != nil{
+		http.Error(w, "invalid input", http.StatusBadRequest)
+		return
+	}
+	
+	result := db.Create(&u)
 	if result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return

@@ -1,0 +1,82 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: db-deployment
+#   labels:
+#     app: mydb
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: mydb
+#   template:
+#     metadata:
+#       labels:
+#         app: mydb
+#     spec:
+#       containers:
+#       - name: mydb
+#         image: postgres:latest
+#         ports:
+#         - containerPort: 5432
+#         envFrom:
+#         - configMapRef:
+#             name: db-config
+#         env:
+#         - name: POSTGRES_PASSWORD
+#           value: "postgres"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deployment
+  labels:
+    app: progressdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: progressdb
+  template:
+    metadata:
+      labels:
+        app: progressdb
+    spec:
+      containers:
+      - name: progressdb
+        image: postgres:latest
+        ports:
+        - containerPort: 5432
+        env:
+        # - name: POSTGRES_DB
+        #   value: prithvi
+        # - name: POSTGRES_USER
+        #   value: postgres
+        # - name: POSTGRES_PASSWORD
+        #   value: Harshith
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: POSTGRES_DB
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+spec:
+  selector:
+    app: progressdb 
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

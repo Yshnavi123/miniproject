@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  db:
+  db-service:
     image: postgres:latest
     environment:
       POSTGRES_DB: progressdb
@@ -16,6 +16,6 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      - db-service
     environment:
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/progressdb?sslmode=disable"

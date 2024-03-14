@@ -1,0 +1,11 @@
+# Define default values for your Helm chart here
+db:
+  image: postgres:latest
+  secret:
+    POSTGRES_DB: progressdb
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+myapp:
+  image: "vdesh/app:latest"
+
+  #helm uninstall new-release
